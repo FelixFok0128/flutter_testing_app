@@ -272,12 +272,6 @@ class CustomMarkerState extends State<CustomMarker> {
         if (item[0] != rng.toString()) {
           param.add(LatLng(item[1], item[2]));
         }
-        // taxiLocation aTaxi = taxiLocation(
-        //     id: item[0],
-        //     lat: item[1].toString(),
-        //     lng: item[2].toString(),
-        //     location: item[3]);
-        // allTaxi.add(aTaxi);
       }
       showMarker(param);
       print("socketListener $param");

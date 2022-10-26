@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_testing_app/carousel_slider.dart';
 import 'package:flutter_testing_app/health.dart';
 import 'package:flutter_testing_app/horizontal_list.dart';
 import 'package:flutter_testing_app/setstate.dart';
+import 'package:flutter_testing_app/test.dart';
 import 'package:url_launcher/link.dart';
 import 'Map/map.dart';
 import 'hyperLink.dart';
@@ -15,7 +18,7 @@ class MyAppScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Hyperlink Text Example',
+      title: 'Flutter Example',
       routes: {
         '/': (context) => FirstScreen(),
         '/health': (context) => HealthApp(),
@@ -24,8 +27,10 @@ class MyAppScreen extends StatelessWidget {
         '/HorizontalList': (context) => HorizontalList(),
         '/setStateScreen': (context) => setStateScreen(),
         '/map': (context) => CustomMarkerPage(),
+        '/testScreen': (context) => TestScreen(),
       },
-      themeMode: ThemeMode.dark,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
     );
   }
 }
@@ -43,6 +48,7 @@ class FirstScreen extends StatelessWidget {
       "pk.eyJ1IjoiZmVsaXhmb2tkaCIsImEiOiJjbDhsZ29vZDIwcWZhM29sNXc3OW11aTZvIn0.IacBVZC9djerJ8CeCZanbQ";
 
   const FirstScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +70,7 @@ class FirstScreen extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            getLink('/setStateScreen', "setStateScreen"),
+            getLink('/testScreen', "testScreen"),
           ],
         ),
       ),

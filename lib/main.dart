@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_testing_app/carousel_slider.dart';
+import 'package:flutter_testing_app/chat.dart';
 import 'package:flutter_testing_app/health.dart';
 import 'package:flutter_testing_app/horizontal_list.dart';
 import 'package:flutter_testing_app/setstate.dart';
@@ -23,7 +24,8 @@ class MyAppScreen extends StatelessWidget {
         '/CarouselDemo': (context) => CarouselDemo(),
         '/HorizontalList': (context) => HorizontalList(),
         '/setStateScreen': (context) => setStateScreen(),
-        '/map': (context) => CustomMarkerPage(),
+        // '/map': (context) => CustomMarkerPage(),
+        '/chat': (context) => ChatScreen(),
       },
       themeMode: ThemeMode.dark,
     );
@@ -64,7 +66,7 @@ class FirstScreen extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            getLink('/setStateScreen', "setStateScreen"),
+            getLink('/chat', "chat"),
           ],
         ),
       ),

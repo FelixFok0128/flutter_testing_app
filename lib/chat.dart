@@ -33,13 +33,6 @@ class _ChatScreenState extends State<ChatScreen> {
       // We didn't ask for permission yet or the permission has been denied before but not permanently.
       await Permission.microphone.request();
     }
-/*
-// You can can also directly ask the permission about its status.
-    if (await Permission.microphone.isRestricted) {
-      // The OS restricts access, for example because of parental controls.
-      await Permission.microphone.request();
-    }
-    */
   }
 
   @override

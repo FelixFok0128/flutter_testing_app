@@ -24,7 +24,7 @@ class MyAppScreen extends StatelessWidget {
         '/CarouselDemo': (context) => CarouselDemo(),
         '/HorizontalList': (context) => HorizontalList(),
         '/setStateScreen': (context) => setStateScreen(),
-        // '/map': (context) => CustomMarkerPage(),
+        '/map': (context) => CustomMarkerPage(),
         '/chat': (context) => ChatScreen(),
       },
       themeMode: ThemeMode.dark,

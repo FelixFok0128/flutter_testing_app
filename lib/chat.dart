@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:talkjs_flutter/talkjs_flutter.dart';
 
 void main() {
@@ -21,36 +20,23 @@ class _ChatScreenState extends State<ChatScreen> {
   // while the ChatBox is loading
   bool chatBoxVisible = false;
 
-  Future askForPermissions() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.microphone,
-    ].request();
-  }
-
-  getPremission() async {
-    var status = await Permission.microphone.status;
-    if (!status.isGranted) {
-      // We didn't ask for permission yet or the permission has been denied before but not permanently.
-      await Permission.microphone.request();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final session = Session(appId: 'twXs1hrO');
 
-    final me = session.getUser(id: '123456', name: 'Alice', role: 'tester');
+    final me = session.getUser(id: '123456', name: 'Alice');
     // final me = session.getUser(id: '654321', name: 'Sebastian', role: 'tester');
     session.me = me;
+    // final other = session.getUser(id: '654321', name: 'Sebastian');
+    // // final other = session.getUser(id: '123456', name: 'Alice');
 
     final other = session.getUser(id: '654321', name: 'Sebastian');
-    // final other = session.getUser(id: '123456', name: 'Alice');
-
+    final other2 = session.getUser(id: 'qwerty', name: 'Bobby');
     final conversation = session.getConversation(
       id: Talk.oneOnOneId(me.id, other.id),
       participants: {Participant(me), Participant(other)},
     );
-    // getPremission();
+
     return MaterialApp(
       title: 'TalkJS Demo',
       home: Scaffold(
@@ -91,21 +77,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       // and we set the visibility of the ChatBox according to its loading state
                       setState(() {
                         if (state == LoadingState.loaded) {
-                          // getPremission();
-
                           chatBoxVisible = true;
                         } else {
                           chatBoxVisible = false;
                         }
                       });
-                    },
-                    onCustomMessageAction: {
-                      'testName': (event) {
-                        print('testName message with id: ${event.message.id}');
-                      },
-                      'testable': (event) {
-                        print('testable message with id: ${event.message.id}');
-                      },
                     },
                   ),
                 ),

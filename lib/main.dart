@@ -1,3 +1,4 @@
+import 'package:date_picker_timeline/extra/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_testing_app/carousel_slider.dart';
 import 'package:flutter_testing_app/chat.dart';
@@ -8,6 +9,10 @@ import 'package:url_launcher/link.dart';
 import 'Map/map.dart';
 import 'hyperLink.dart';
 
+import 'package:testing_package/testing_package.dart';
+// import 'package:testing_package/test_widget.dart';
+
+// import 'package:testing_package/test_function.dart';
 void main() {
   runApp(MyAppScreen());
 }
@@ -67,6 +72,17 @@ class FirstScreen extends StatelessWidget {
               height: 20,
             ),
             getLink('/chat', "chat"),
+            SizedBox(
+              height: 20,
+            ),
+            testingBtn(
+                child: Text("Click me"),
+                onPressed: () {
+                  String aS = testFunction.returnAString("hello world");
+                  print(aS);
+                  // testFunction func = testFunction();
+                  // testFunction.returnAString;
+                })
           ],
         ),
       ),

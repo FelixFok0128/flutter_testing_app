@@ -117,7 +117,7 @@ class _FirstScreenState extends State<FirstScreen> {
             Center(
               child: getLink('/health', "health"),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             getLink('/map', "map"),

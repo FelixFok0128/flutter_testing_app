@@ -144,7 +144,7 @@ class _FirstScreenState extends State<FirstScreen> {
                   Get.changeThemeMode(
                       Get.isDarkMode ? ThemeMode.light : ThemeMode.dark);
                 },
-                child: Text.rich(
+                child: const Text.rich(
                   TextSpan(children: [
                     TextSpan(text: "Home: "),
                     TextSpan(

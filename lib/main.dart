@@ -125,7 +125,7 @@ class _FirstScreenState extends State<FirstScreen> {
               height: 20,
             ),
             getLink('/chat', "chat"),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             testingBtn(

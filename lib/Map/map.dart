@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart'; // ignore: unnecessary_import
 import 'package:flutter_testing_app/Map/socket_client.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../main.dart';
 import 'page.dart';
@@ -41,7 +44,13 @@ class CustomMarkerState extends State<CustomMarker> {
   late PermissionStatus _permissionGranted;
   LocationData? _userLocation;
 
-  LatLng currentLatlng = LatLng(22.37530980321865, 114.12000278241096);
+  final GlobalKey screenCapGlobalKey = GlobalKey();
+
+  List<taxiLocation> allTaxi = [];
+  // String  selfId =  Random().nextInt(20000).toString();
+  int rng = 31;
+
+  // LatLng currentLatlng = LatLng(22.37530980321865, 114.12000278241096);
 
   void _addMarkerStates(_MarkerState markerState) {
     _markerStates.add(markerState);
@@ -129,59 +138,64 @@ class CustomMarkerState extends State<CustomMarker> {
     if (_userLocation != null) {
       aLatLong = LatLng(_userLocation!.latitude!, _userLocation!.longitude!);
     }
-    return Scaffold(
-        body: Stack(children: [
-          MapboxMap(
-            accessToken: FirstScreen.ACCESS_TOKEN,
-            trackCameraPosition: true,
-            onMapCreated: _onMapCreated,
-            onMapLongClick: _onMapLongClickCallback,
-            onCameraIdle: _onCameraIdleCallback,
-            onStyleLoadedCallback: _onStyleLoadedCallback,
-            myLocationEnabled: true,
-            initialCameraPosition: CameraPosition(target: aLatLong, zoom: 15),
-            myLocationTrackingMode: MyLocationTrackingMode.Tracking,
-          ),
-          IgnorePointer(
-              ignoring: true,
-              child: Stack(
-                children: _markers,
-              ))
-        ]),
-        floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton(
-              onPressed: () {
-                print("navigation");
-              },
-              child: Icon(Icons.navigation_outlined),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            FloatingActionButton(
-              onPressed: () {
-                // Generate random markers
-                var param = <LatLng>[
-                  LatLng(22.313654047487383, 114.22163369197435),
-                  LatLng(22.311230085433415, 114.2260522040974),
-                  LatLng(22.306980923258582, 114.2283232628962),
-                  LatLng(22.312459773071296, 114.22522122333027),
-                ];
-                // for (var i = 0; i < 4; i++) {
-                //   final lat = _rnd.nextDouble() * 20 + 22;
-                //   final lng = _rnd.nextDouble() * 20 + 114;
-                //   param.add(LatLng(lat, lng));
-                // }
-                showMarker(param);
-                // updateLocation();
-                // socketListener();
-              },
-              child: Icon(Icons.pin_drop_outlined),
-            ),
-          ],
-        ));
+    return RepaintBoundary(
+        key: screenCapGlobalKey,
+        child: Scaffold(
+            body: Stack(children: [
+              MapboxMap(
+                accessToken: FirstScreen.ACCESS_TOKEN,
+                trackCameraPosition: true,
+                onMapCreated: _onMapCreated,
+                onMapLongClick: _onMapLongClickCallback,
+                onCameraIdle: _onCameraIdleCallback,
+                onStyleLoadedCallback: _onStyleLoadedCallback,
+                myLocationEnabled: true,
+                initialCameraPosition:
+                    CameraPosition(target: aLatLong, zoom: 15),
+                myLocationTrackingMode: MyLocationTrackingMode.Tracking,
+              ),
+              IgnorePointer(
+                  ignoring: true,
+                  child: Stack(
+                    children: _markers,
+                  ))
+            ]),
+            floatingActionButton: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  onPressed: () {
+                    print("navigation");
+                    _printPngBytes();
+                  },
+                  child: Icon(Icons.navigation_outlined),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                FloatingActionButton(
+                  onPressed: () {
+                    // socketListener();
+                    Map dumData = {
+                      "location": [
+                        ["15arv87jhytew", 22.255138, 114.235484, "ISLANDS"],
+                        ["sd4563ertru", 22.314948, 114.257284, "SAI KUNG"],
+                        ["31", 22.3071517, 114.2230183, "KWUN TONG"],
+                        ["11", 22.34, 114.179, "KOWLOON CITY"],
+                        ["12", 22.8, 114.379, "Out of Hong Kong"],
+                        ["66gerg7", 22.421945, 114.249284, "TAI PO"],
+                        ["63", 37.4219884, -122.0840727, "Out of Hong Kong"],
+                        ["15", 22.34, 114.179, " KOWLOON CITY"],
+                        ["sd", 22.445, 114.5788, "Out of Hong Kong"]
+                      ]
+                    };
+
+                    getMarker(dumData["location"]);
+                  },
+                  child: Icon(Icons.pin_drop_outlined),
+                ),
+              ],
+            )));
   }
 
   void toast(String msg) {
@@ -196,55 +210,72 @@ class CustomMarkerState extends State<CustomMarker> {
     print(msg);
   }
 
+// MARK: socket
   void socketListener() async {
     String ipString = "10.88.18.106";
     int portInt = 8888;
 
-    try {
-      toast("socketListener start connect to $ipString:$portInt");
-      final socket = await Socket.connect(ipString, portInt);
-      toast(
-          "socketListener Connected to ${socket.remoteAddress.address}:${socket.remotePort}");
+    toast("socketListener start connect to $ipString:$portInt");
+    final socket = await Socket.connect(ipString, portInt);
+    toast(
+        "socketListener Connected to ${socket.remoteAddress.address}:${socket.remotePort}");
 
-      // listen to the received data event stream
-      socket.listen((List<int> event) {
-        var data = utf8.decode(event);
-        final jsonData = json.decode(data);
-        // print(data.runtimeType );
-        // print(data );
-        print(jsonData);
-        // print(jsonData.runtimeType);
-        if (jsonData is List) {
-          //Do something
-          for (var i in jsonData) {
-            var d = json.decode(i);
-            print(d);
-          }
-        } else {
-          var clientID = jsonData['clientID'];
-          toast("socketListener myClientID is " + clientID.toString());
+    // listen to the received data event stream
+    socket.listen((List<int> event) {
+      var data = utf8.decode(event);
+      final jsonData = json.decode(data);
+      // print(data.runtimeType );
+      // print(data );
+      print("socketListener listen $jsonData");
+      // print(jsonData.runtimeType);
+
+      if (jsonData is List) {
+        //Do something
+        // for (var i in jsonData) {
+        //   var d = json.decode(i);
+        //   print(d);
+        // }
+        // Map jsonMap = jsonData;
+
+        // jsonMap[]
+      } else {
+        var clientID = jsonData['clientID'];
+        if (clientID != null) {
           updateLocation(clientID, socket);
         }
-      });
 
-      // send hello
-      // socket.add(utf8.encode('hello'));
+        getMarker(jsonData);
+      }
+    });
 
-      // wait 5 seconds
-      await Future.delayed(Duration(seconds: 5));
+    // wait 5 seconds..
+    await Future.delayed(Duration(seconds: 5));
 
-      // .. and close the socket
-      socket.close();
-    } on Error {
-      toast('socketListener fail');
-    }
+    // .. and close the socket
+    socket.close();
+    print("socketListener socket close");
   }
 
-  void updateLocation(clientID, socket) {
+  void updateLocation(clientID, Socket socket) {
     var body =
-        '{"type": "Taxi","clientID":${clientID},"lat": ${_userLocation!.latitude},"lng":${_userLocation!.longitude}, "Id": 31}';
-    print("socketListener $body");
+        '{"type": "Taxi","clientID":${clientID},"lat": ${_userLocation!.latitude},"lng":${_userLocation!.longitude}, "Id": ${rng.toString()}}';
+    print("socketListener update $body");
+
     socket.write(body);
+  }
+
+// MARK: - marker
+  void getMarker(locationJson) {
+    var param = <LatLng>[];
+    if (locationJson != null) {
+      for (List item in locationJson) {
+        if (item[0] != rng.toString()) {
+          param.add(LatLng(item[1], item[2]));
+        }
+      }
+      showMarker(param);
+      print("socketListener $param");
+    }
   }
 
   void showMarker(List<LatLng> latLngList) {
@@ -255,6 +286,70 @@ class CustomMarkerState extends State<CustomMarker> {
         _addMarker(point, latLngList[i]);
       }
     });
+  }
+
+  //MARK:- cap screen
+  Future<Uint8List?> _capturePng() async {
+    RenderRepaintBoundary boundary = screenCapGlobalKey.currentContext!
+        .findRenderObject()! as RenderRepaintBoundary;
+
+    if (boundary.debugNeedsPaint) {
+      print("Waiting for boundary to be painted.");
+      await Future.delayed(const Duration(milliseconds: 20));
+      return _capturePng();
+    }
+
+    var image = await boundary.toImage();
+    var byteData = await image.toByteData(format: ImageByteFormat.png);
+    return byteData?.buffer.asUint8List();
+  }
+
+  void _printPngBytes() async {
+    var pngBytes = await _capturePng();
+    var bs64 = base64Encode(pngBytes!);
+
+    _createFileFromString(pngBytes);
+  }
+
+  Future<String> _createFileFromString(Uint8List imgbytes) async {
+    // final encodedStr = imgbytes;
+    // print(encodedStr.length);
+    // Uint8List bytes = base64.decode(encodedStr);
+    print(imgbytes.length);
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    // File file = File("/storage/emulated/0/Download/" +
+    File file =
+        File(dir + DateTime.now().millisecondsSinceEpoch.toString() + ".png");
+    await file.writeAsBytes(imgbytes);
+    print(file.path);
+    return file.path;
+  }
+}
+
+class taxiLocation {
+  final String id;
+  final String lat;
+  final String lng;
+  final String location;
+  taxiLocation({
+    required this.id,
+    required this.lat,
+    required this.lng,
+    required this.location,
+  });
+
+  taxiLocation copyWith({
+    String? id,
+    String? lat,
+    String? lng,
+    String? location,
+  }) {
+    return taxiLocation(
+      id: id ?? this.id,
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+      location: location ?? this.location,
+    );
   }
 }
 

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_testing_app/carousel_slider.dart';
 import 'package:flutter_testing_app/chat.dart';
 import 'package:flutter_testing_app/health.dart';
 import 'package:flutter_testing_app/horizontal_list.dart';
 import 'package:flutter_testing_app/setstate.dart';
+import 'package:flutter_testing_app/test.dart';
 import 'package:url_launcher/link.dart';
 import 'Map/map.dart';
 import 'hyperLink.dart';
@@ -27,7 +30,7 @@ class MyAppScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Hyperlink Text Example',
+      title: 'Flutter Example',
       routes: {
         '/': (context) => FirstScreen(),
         '/health': (context) => HealthApp(),
@@ -117,7 +120,7 @@ class _FirstScreenState extends State<FirstScreen> {
             SizedBox(
               height: 20,
             ),
-            getLink('/map2', "map2"),
+            getLink('/map', "map"),
             SizedBox(
               height: 20,
             ),

@@ -24,7 +24,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final session = Session(appId: 'twXs1hrO');
 
-    final me = session.getUser(id: '123456', name: 'Alice');
+    final me = session.getUser(id: '123456', name: 'Alice', role: 'tester');
     // final me = session.getUser(id: '654321', name: 'Sebastian', role: 'tester');
     session.me = me;
     // final other = session.getUser(id: '654321', name: 'Sebastian');

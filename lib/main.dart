@@ -14,7 +14,6 @@ import 'Map/map.dart';
 import 'Map/moveMarker.dart';
 import 'hyperLink.dart';
 
-import 'package:flutter_its_utils/flutter_its_utils.dart';
 import 'package:flutter_package_spa_util/flutter_package_spa_util.dart';
 import 'package:logger/logger.dart';
 
@@ -84,12 +83,12 @@ void demo() async {
   Logger(printer: SimplePrinter(colors: true)).v('boom');
   // testFunction.returnAString("string");
   // await SharedPreferencesUtil.listKey();
-  String? test1 = await SharedPreferencesUtil.getString("test1");
-  if (test1 == null) {
-    SharedPreferencesUtil.setString("test1", "test1");
-  } else {
-    SharedPreferencesUtil.setString("test1", "${DateTime.now()}");
-  }
+  // String? test1 = await SharedPreferencesUtil.getString("test1");
+  // if (test1 == null) {
+  //   SharedPreferencesUtil.setString("test1", "test1");
+  // } else {
+  //   SharedPreferencesUtil.setString("test1", "${DateTime.now()}");
+  // }
 }
 
 class FirstScreen extends StatefulWidget {
@@ -176,9 +175,11 @@ class _FirstScreenState extends State<FirstScreen> {
               //   isNotify: true,
               //   onPressed: () {},
               // ),
-              TaxiTypeSelector(),
-              SpecialButton(
-                  iconPath: "assets/images/blue4taxi.svg", onPressed: () {}),
+              TaxiTypeSelector(
+                onTap: (TaxiType taxiType) {
+                  // logger.d(taxiType, TaxiTypeSelector);
+                },
+              ),
               // bioAuth(),
               // driverHomeTopBar(),
               // const PassengerDistrictClock(

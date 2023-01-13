@@ -1,0 +1,3 @@
+[submodule "subModule/spa_utils"]
+	path = subModule/spa_utils
+	url = https://github.com/Dreamshub-Limited/flutter_package_spa_util.git
